@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # 파일 경로, 파일명 입력
-pwd = '~/Documents/Coding/capstone/data'
+pwd = '~/Documents/Coding/capstone/data/240122'
 filename_x = 'preprocessed_data.csv'
 filename_y = 'dataset_230122.csv'
 

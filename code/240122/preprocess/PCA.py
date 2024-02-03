@@ -6,7 +6,7 @@ import pandas as pd
 num = int(input("주성분의 개수를 입력하세요. "))
 
 # 파일 경로, 파일명 입력
-pwd = '~/Documents/Coding/capstone/data'
+pwd = '~/Documents/Coding/capstone/data/240122'
 filename = 'preprocessed_data.csv'
 
 # DataFrame 생성

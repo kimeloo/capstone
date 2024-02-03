@@ -37,7 +37,7 @@ def replace_column_char(df, column_name, replace_value):
 if __name__ == '__main__':
     import pandas as pd
     # 파일 경로, 파일명 입력
-    pwd = './data/240122'
+    pwd = '~/Documents/Coding/capstone/data/240122'
     filename = 'dataset_230122.csv'
     
     # DataFrame 생성

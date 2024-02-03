@@ -64,7 +64,7 @@ def get_ko_trans(english):
 # 코드 실행 (CSV에 적용)
 import pandas as pd
 if __name__ == "__main__":
-    pwd = './data'
+    pwd = '~/Documents/Coding/capstone/data/240122'
     df = pd.read_csv(f'{pwd}/word.csv')
     df['English'] = df['Word'].apply(get_en_trans)
     df['Korean'] = df['English'].apply(get_ko_trans)

@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 # 파일 경로, 파일명 입력
-pwd = '~/Documents/Coding/capstone/data'
+pwd = '~/Documents/Coding/capstone/data/240122'
 filename = 'preprocessed_data.csv'
 
 # DataFrame 생성
