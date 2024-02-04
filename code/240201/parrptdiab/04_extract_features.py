@@ -24,7 +24,7 @@ num_trials = 100
 
 # train_test_split을 여러 번 시행하여 중요도 누적
 for _ in range(num_trials):
-    X_train, X_test, y_train, y_test = train_test_split(X_fit, y, test_size=0.2, random_state=None)  # random_state=None으로 설정하여 매번 다른 세트 생성
+    X_train, X_test, y_train, y_test = train_test_split(X_fit, y, test_size=0.2, random_state=None) # random_state=None으로 설정하여 매번 다른 데이터셋 생성
     rf_model = RandomForestClassifier()
     rf_model.fit(X_train, y_train)
     feature_importances = rf_model.feature_importances_
