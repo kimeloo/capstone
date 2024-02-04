@@ -19,7 +19,8 @@ sql_query = '''
                 INNER JOIN shhs1 as X_0
                 ON  X_1.gender=X_0.gender
                 AND X_1.height-X_0.height BETWEEN -3 AND 3
-                AND X_1.weight20=X_0.weight20
+                AND X_1.weight20-X_0.weight20 BETWEEN -1 AND 1
+                AND X_1.age_s1-X_0.age_s1 BETWEEN -3 AND 3
                 AND X_0.parrptdiab==0
                 WHERE X_1.parrptdiab==1
                 group by X_1.pptid) as X_pptid
