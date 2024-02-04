@@ -1,6 +1,6 @@
 import pwd
 import pandas as pd
-from sqlalchemy import column
+
 
 def replace_missing_values(df):
     # 모든 컬럼을 float으로 변환
@@ -25,8 +25,8 @@ def replace_missing_values(df):
 
 # CSV 파일 불러오기
 pwd = '/Users/kimeloo/Documents/Coding/capstone/data/240201'
-file_name = 'diab_train_data.csv'
-df = pd.read_csv(f'{pwd}/{file_name}')
+file_name = 'diab_train_data'
+df = pd.read_csv(f'{pwd}/{file_name}.csv')
 
 # 필요 없는 컬럼 제거
 ## id로 끝나는 컬럼 : ID
@@ -58,4 +58,4 @@ df = df.drop(columns=change_name)
 df = replace_missing_values(df)
 
 # 결과 저장
-df.to_csv(f'{pwd}/diab_train_replaced.csv', index=False)
+df.to_csv(f'{pwd}/{file_name}_replaced.csv', index=False)

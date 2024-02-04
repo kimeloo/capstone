@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 # 파일 경로, 파일명 입력
 pwd = '~/Documents/Coding/capstone/data/240201'
-filename = 'diab_train_replaced.csv'
+filename = 'diab_train_data_replaced.csv'
 
 # DataFrame 생성
 X = pd.read_csv(f'{pwd}/{filename}').drop(columns='parrptdiab')
