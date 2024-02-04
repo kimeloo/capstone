@@ -3,7 +3,7 @@ import pandas as pd
 from sqlalchemy import column
 
 def replace_missing_values(df):
-    # 모든 컬럼을 int 또는 float로 변환
+    # 모든 컬럼을 float으로 변환
     df = df.astype('float')
 
     # 각 컬럼의 결측치 비율 계산
@@ -29,8 +29,22 @@ file_name = 'diab_train_data.csv'
 df = pd.read_csv(f'{pwd}/{file_name}')
 
 # 필요 없는 컬럼 제거
-## nsrrid, pptid, pptidr : ID
-df = df.drop(columns=['nsrrid', 'pptid', 'pptidr'])
+## id로 끝나는 컬럼 : ID
+df = df[df.columns.drop(list(df.filter(regex='id$')))]
+## pptidr : ID
+df = df.drop(columns=['pptidr'])
+## raw로 시작하는 컬럼 : 각 값을 raw 수치로 표현
+df = df[df.columns.drop(list(df.filter(regex='^raw')))]
+## shhs1로 시작하는 컬럼 : 폼 응답여부 값
+df = df[df.columns.drop(list(df.filter(regex='^shhs1')))]
+## ohga1, insuln1 : 저혈당제, 인슐린 투약 여부
+df = df.drop(columns=['ohga1', 'insuln1'])
+## syst120,220,320, dias120,220,320 : 혈압 측정 값이지만, systbp, diasbp가 그 평균값이므로 제거
+df = df.drop(columns=['syst120', 'syst220', 'syst320', 'dias120', 'dias220', 'dias320'])
+## age_category_s1 : age_s1을 범주화한 값이므로 제거
+df = df.drop(columns=['age_category_s1'])
+## gh_s1, genhth25, exclnt25 : 전반적인 건강에 대한 자기평가
+df = df.drop(columns=['gh_s1', 'genhth25', 'exclnt25'])
 
 # 시간 데이터 정수로 변환
 column_name = 'rcrdtime'
