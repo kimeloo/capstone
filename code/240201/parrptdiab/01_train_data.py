@@ -19,7 +19,7 @@ sql_query = '''
                 INNER JOIN shhs1 as X_0
                 ON  X_1.gender=X_0.gender
                 AND X_1.height-X_0.height BETWEEN -3 AND 3
-                AND X_1.weight20-X_0.weight20 BETWEEN -1 AND 1
+                AND X_1.weight-X_0.weight BETWEEN -1 AND 1
                 AND X_1.age_s1-X_0.age_s1 BETWEEN -3 AND 3
                 AND X_0.parrptdiab==0
                 WHERE X_1.parrptdiab==1
@@ -32,8 +32,8 @@ sql_query = '''
 train = pd.read_sql(sql_query, conn)
 conn.close()
 
-print(train)
-print(train.info())
+# print(train)
+# print(train.info())
 # train data 중, parrptdiab 값의 개수 확인
 print(train['parrptdiab'].value_counts())
 

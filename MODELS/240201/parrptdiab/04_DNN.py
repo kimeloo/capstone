@@ -1,44 +1,52 @@
 import pandas as pd
-# 파일 경로, 파일명 입력
-pwd = '~/Documents/Coding/capstone/data/240122'
-filename_x = 'preprocessed_data.csv'
-filename_y = 'dataset_230122.csv'
-
-# DataFrame 생성
-X = pd.read_csv(f'{pwd}/{filename_x}')
-y = pd.read_csv(f'{pwd}/{filename_y}')['pd']
-
-X = X[['cvtia', 'cvcer', 'poremlat', 'potmrem', 'pqpenth', 'poremli', 'm1adepr', 'poremlii', 'fosofam1', 'poplmrem']].copy()
-
-# 데이터 정규화
-from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
-X_fit = scaler.fit_transform(X)
-
-# 훈련, 테스트 세트 분리
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X_fit, y, test_size=0.2, random_state=10)
-
-
-# -------------------
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers.legacy import Adam
 from keras.callbacks import EarlyStopping
 from sklearn.metrics import f1_score, confusion_matrix
+import matplotlib.pyplot as plt
 
+# CSV 파일 불러오기
+pwd = '/Users/kimeloo/Documents/Coding/capstone/data/240201'
+train_file = 'diab_train_data_replaced.csv'
+test_file = 'shhs1_replaced.csv'
+train = pd.read_csv(f'{pwd}/{train_file}')
+test = pd.read_csv(f'{pwd}/{train_file}')
+
+# 아웃라이어 제거 전 컬럼
+columns = ['diasbp', 'trig', 'savbnbh', 'davbnbh', 'oximet51', 'ai_rem', 'pcs_s1', 'davbnoh', 'savbnoh', 'avgsat']
+# 아웃라이어 제거 후 컬럼
+columns = ['psg_month', 'oardrop2', 'oardrbp2', 'oarbp2', 'cardnop2', 'canop2', 'cardnbp2', 'canbp2', 'cardrop2', 'carop2']
+
+# 변수 분리
+X_train = train[columns].copy()
+y_train = train['parrptdiab']
+X_test = test[columns].copy()
+y_test = test['parrptdiab']
+
+# 데이터 정규화
+scaler = StandardScaler()
+X_train_fit = scaler.fit_transform(X_train)
+X_test_fit = scaler.transform(X_test)
 
 # 모델 설계
-num_features = X_train.shape[1]
+num_features = X_train_fit.shape[1]
 model = Sequential([
     Dense(256, activation='relu', input_shape=(num_features,)),
-    Dropout(0.3),
+    Dropout(0.5),
+    Dense(256, activation='relu'),
+    Dropout(0.5),
+    Dense(256, activation='relu'),
+    Dropout(0.5),
+    Dense(256, activation='relu'),
+    Dropout(0.5),
     Dense(128, activation='relu'),
-    Dropout(0.3),
+    Dropout(0.5),
+    Dense(64, activation='relu'),
+    Dropout(0.5),
     Dense(16, activation='relu'),
-    Dropout(0.3),
     Dense(1, activation='sigmoid')
 ])
 
@@ -49,24 +57,21 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weig
 
 # 모델 학습
 epoch = 550
-history = model.fit(np.expand_dims(X_train, axis=-1), y_train, epochs=epoch, validation_split=0.2, callbacks=[early_stopping])
+# history = model.fit(X_train_fit, y_train, epochs=epoch, validation_split=0.2, callbacks=[early_stopping])
+history = model.fit(X_train_fit, y_train, epochs=epoch, validation_split=0.2)
 
 # 모델 평가
-test_loss, test_acc = model.evaluate(np.expand_dims(X_test, axis=-1), y_test)
+test_loss, test_acc = model.evaluate(X_test_fit, y_test)
 print(f'Test loss: {test_loss}\nTest accuracy: {test_acc}')
 
 # F1 score
-y_pred = (model.predict(np.expand_dims(X_test, axis=-1)) > 0.5).astype("int32")
+y_pred = (model.predict(X_test_fit) > 0.5).astype("int32")
 f1 = f1_score(y_test, y_pred)
-print(f'F1 Score: {f1}')
+print("F1 Score:", f1)
 
 # Confusion matrix
 conf_mat = confusion_matrix(y_test, y_pred)
 
-# 정확도, 오차, confusionmatrix 그리기
-import matplotlib.pyplot as plt
-plt.figure(figsize = (10,5))
-epoch_range = np.arange(1, epoch + 1)
 # 정확도 그래프
 plt.subplot(1, 3, 1)
 plt.plot(history.history['accuracy'])

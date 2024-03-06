@@ -12,16 +12,22 @@ filename = 'diab_train_data_replaced.csv'
 X = pd.read_csv(f'{pwd}/{filename}').drop(columns='parrptdiab')
 y = pd.read_csv(f'{pwd}/{filename}')['parrptdiab']
 
+# 표준편차 기준으로 아웃라이어 제거
+mean = X.mean()
+std = X.std()
+threshold = 3  # 평균에서 3 표준편차 이내로 데이터를 유지
+X_without_outliers = X[(X > mean - threshold * std) & (X < mean + threshold * std)]
+
 # 데이터 정규화
 scaler = StandardScaler()
-X_fit = scaler.fit_transform(X)
+X_fit = scaler.fit_transform(X_without_outliers)
 
 # 누적된 중요도 저장할 배열
-cumulative_importance = np.zeros(X.shape[1])
+cumulative_importance = np.zeros(X_fit.shape[1])
 
 # 시행 횟수
-num_trials = 100
-
+num_trials = 3
+print(cumulative_importance)
 # train_test_split을 여러 번 시행하여 중요도 누적
 for _ in range(num_trials):
     X_train, X_test, y_train, y_test = train_test_split(X_fit, y, test_size=0.2, random_state=None) # random_state=None으로 설정하여 매번 다른 데이터셋 생성

@@ -20,7 +20,7 @@ def replace_missing_values(df):
     # 그 이외의 값을 가진 컬럼의 결측치를 평균으로 대체
     columns_to_replace = df.columns[(df.min() < 0) | (df.max() > 5)].tolist()
     df[columns_to_replace] = df[columns_to_replace].fillna(df.mean())
-    
+
     return df
 
 # CSV 파일 불러오기
@@ -46,6 +46,8 @@ for file_name in file_names:
     df = df.drop(columns=['age_category_s1'])
     ## gh_s1, genhth25, exclnt25 : 전반적인 건강에 대한 자기평가
     df = df.drop(columns=['gh_s1', 'genhth25', 'exclnt25'])
+    ## 추가 필요없는 컬럼 제거
+    df = df.drop(columns=['ecgdate', 'stdydtqa', 'sleep_later', 'staging1', 'staging2', 'staging3', 'staging4', 'staging5', 'staging7', 'staging8', 'restan1', 'restan2', 'restan3', 'restan4', 'restan5', 'overall_shhs1', 'hrov150', 'hrund30', 'oxyund70', 'ahiov50', 'srhype', 'parrptdiab', 'educat', 'date02', 'date10', 'date25', 'visitnumber', 'hrdur', 'airdur', 'chestdur', 'abdodur', 'eeg1dur', 'eeg2dur', 'eogrdur', 'eogldur', 'chindur', 'oximdur', 'posdur', 'hrqual', 'airqual', 'chstqual', 'abdoqual', 'eeg1qual', 'eeg2qual', 'eogrqual', 'eoglqual', 'chinqual', 'oximqual', 'posqual', 'lightoff', 'rcrdtime', 'psg_month'])
 
     # 시간 데이터 정수로 변환
     column_name = 'rcrdtime'
