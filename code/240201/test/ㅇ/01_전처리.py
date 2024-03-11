@@ -11,8 +11,7 @@ print(df.shape)
 df = df[df['outliercheck1'] != 1]
 df = df[df['outliercheck2'] != 1]
 ## 결과 컬럼이 null이면 해당 행 제거
-df = df.dropna(subset=['parrptdiab'])       # 당뇨
-df = df.dropna(subset=['htnderv_s1'])     # 고혈압
+df = df.dropna(subset=['tca1'])        # 항우울제 복용여부
 ## 필요 없는 컬럼 제거
 df = df[df.columns.drop(list(df.filter(regex='id$')))]
 df = df.drop(columns=['pptidr'])
@@ -46,4 +45,4 @@ columns_to_replace = df.columns[(df.min() < 0) | (df.max() > 5)].tolist()
 df[columns_to_replace] = df[columns_to_replace].fillna(df.mean())
 print(df.shape)
 # df를 파일로 저장
-df.to_csv(f'{pwd}/test_01_preprocess.csv', index=False)
+df.to_csv(f'{pwd}/test_01_preprocess_tca1.csv', index=False)
