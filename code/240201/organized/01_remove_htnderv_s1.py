@@ -45,5 +45,6 @@ df = df.drop(columns=change_name)
 # columns_to_replace = df.columns[(df.min() < 0) | (df.max() > 5)].tolist()
 # df[columns_to_replace] = df[columns_to_replace].fillna(df.mean())
 print(df.shape)
-# df를 파일로 저장
-df.to_csv(f'{pwd}/removed_htnderv_s1.csv', index=False)
+
+# 전체 df를 파일로 저장
+df.to_csv(f'{pwd}/01_htnderv_s1.csv', index=False)
