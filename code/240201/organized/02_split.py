@@ -5,10 +5,19 @@ from sklearn.model_selection import train_test_split
 pwd = '~/documents/coding/capstone/data/240201/'
 data = pd.read_csv(pwd + '01_htnderv_s1.csv')
 
-# train-test set split
-X = data
-X_train, X_test = train_test_split(X, test_size=0.3, random_state=2024)
+# train-val-test set split
+# train:test = 7:3
+train, test = train_test_split(data, test_size=0.3, random_state=2024)
+# train:val = 8:2
+train, val = train_test_split(train, test_size=0.2, random_state=2024)
+
+# 데이터 확인
+print(f'original: {data.shape}')
+print(f'train: {train.shape}')
+print(f'val: {val.shape}')
+print(f'test: {test.shape}')
 
 # 각각 저장
-X_train.to_csv(pwd + '02_htnderv_s1_train.csv', index=False)
-X_test.to_csv(pwd + '02_htnderv_s1_test.csv', index=False)
+train.to_csv(pwd + '02_htnderv_s1_train.csv', index=False)
+val.to_csv(pwd + '02_htnderv_s1_val.csv', index=False)
+test.to_csv(pwd + '02_htnderv_s1_test.csv', index=False)

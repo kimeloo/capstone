@@ -35,37 +35,41 @@ class psMatching:
         '''
         # 각 Control 그룹 데이터와의 거리 계산
         distance = np.abs(X_htnderv_s1_each - X_control_list)
+
         # 가장 가까운 데이터의 인덱스 반환
         nearest_index = np.argmin(distance)
         
+        # 가장 가까운 데이터의 거리가 0.1보다 크면 -1 반환
+        if distance[nearest_index] > 0.1:
+            return -1
+
         return nearest_index
 
     def match(self):
         htnderv_s1_group, control_group, X_htnderv_s1, X_control = self.calculate()
         matched_control_group = pd.DataFrame()
         # Nearest-neighbor 매칭
+        del_list = []
         for idx, X_htnderv_s1_each in enumerate(X_htnderv_s1):
             # 가장 가까운 Control 그룹 데이터 Index 찾기
             nearest_index = self.nearest_match(X_htnderv_s1_each, X_control)
+            if nearest_index == -1:
+                del_list.append(idx)
+                continue
             print(f'{idx:>5}st nearest_index: {nearest_index}')
             # 해당 Index에 위치한 X_control 행 제거
-            # print(f'X_control: \n{X_control[nearest_index]}')
             X_control = np.delete(X_control, nearest_index)
             
-            # 해당 Index에 위치한 control_group 행 데이터 matched_control_group에 추가 및 제거
-            # matched_control_group = pd.concat([matched_control_group, control_group.iloc[nearest_index]])
-            # new_row = control_group.iloc[nearest_index]  # 추가할 행의 데이터
-            # matched_control_group.loc[len(matched_control_group)] = new_row
             if matched_control_group.empty:
                 matched_control_group = pd.DataFrame(columns=control_group.columns)
             matched_control_group.loc[len(matched_control_group)] = control_group.iloc[nearest_index]
-
-
-            # print(f'matched_control_group: \n{control_group.iloc[nearest_index]}\n{control_group.index[nearest_index]}')
             control_group = control_group.drop(control_group.index[nearest_index])
-            # print(f'control_group: \n{control_group}')
-            # input()
-        print(f'\nfinal matched_control_group : \n{matched_control_group}')
+
+        print(f'final matched_control_group : \n{matched_control_group}')
+        
+        # del_list 데이터 제거
+        htnderv_s1_group = htnderv_s1_group.drop(htnderv_s1_group.index[del_list])
+
         # 매칭된 데이터셋 생성
         matched_train = pd.concat([htnderv_s1_group, matched_control_group])
 
@@ -75,17 +79,34 @@ if __name__ == "__main__":
     # 데이터 불러오기
     pwd = '~/documents/coding/capstone/data/240201/'
     train_data = pd.read_csv(pwd + '03_htnderv_s1_train.csv')
-    # test_data = pd.read_csv(pwd + '03_htnderv_s1_test.csv')
 
     # psMatching
     match_train = psMatching(train_data)
     matched_train = match_train.match()
 
     # 중복 개수 확인
-    print(f'duplicated : {matched_train.duplicated().sum()}')
+    print(f'duplicated : {matched_train.duplicated().sum()}\n')
 
     # 데이터 확인
-    print(f"before : {train_data['htnderv_s1'].value_counts()}")
-    print(f"after : {matched_train['htnderv_s1'].value_counts()}")
+    print(f"before : {train_data['htnderv_s1'].value_counts()}\n")
+    print(f"after : {matched_train['htnderv_s1'].value_counts()}\n")
     # 전체 데이터를 csv 파일로 저장
-    matched_train.to_csv(pwd + '04_htnderv_s1_all.csv', index=False)
+    matched_train.to_csv(pwd + '04_htnderv_s1_train.csv', index=False)
+
+    # matched_train에 없는 데이터만 추출
+    # 첫 번째 열(nsrrid)을 인덱스로 설정
+    train_data.set_index(train_data.columns[0], inplace=True)
+    matched_train.set_index(matched_train.columns[0], inplace=True)
+    unmatched_train = train_data[~train_data.index.isin(matched_train.index)]
+    print(f'unmatched duplicated : {unmatched_train.duplicated().sum()}')
+    # 인덱스를 컬럼으로 변환
+    train_data.reset_index(inplace=True)
+    matched_train.reset_index(inplace=True)
+    unmatched_train.reset_index(inplace=True)
+    unmatched_train.to_csv(pwd + '04_htnderv_s1_unmatched.csv', index=False)
+    print(f"unmatched : {unmatched_train['htnderv_s1'].value_counts()}\n")
+
+    # 각 데이터셋의 크기 확인
+    print(f"train_data : {train_data.shape}")
+    print(f"matched_train : {matched_train.shape}")
+    print(f"unmatched_train : {unmatched_train.shape}")

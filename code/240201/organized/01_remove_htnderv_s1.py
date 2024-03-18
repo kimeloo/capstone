@@ -4,7 +4,7 @@ import pandas as pd
 pwd = '~/Documents/Coding/capstone/data/240201'
 filename = 'shhs1-dataset-0.20.0.csv'
 # CSV 파일 불러오기
-df = pd.read_csv(f'{pwd}/{filename}')
+df = pd.read_csv(f'{pwd}/{filename}', low_memory=False)
 print(df.shape)
 
 # 1. 전체 데이터에서 필요없는 컬럼/행 제거
@@ -23,6 +23,7 @@ df = df.drop(columns=['syst120', 'syst220', 'syst320', 'dias120', 'dias220', 'di
 df = df.drop(columns=['age_category_s1'])
 df = df.drop(columns=['gh_s1', 'genhth25', 'exclnt25'])
 df = df.drop(columns=['ecgdate', 'stdydtqa', 'staging1', 'staging2', 'staging3', 'staging4', 'staging5', 'staging7', 'staging8', 'restan1', 'restan2', 'restan3', 'restan4', 'restan5', 'overall_shhs1', 'hrov150', 'hrund30', 'oxyund70', 'ahiov50', 'educat', 'date02', 'date10', 'date25', 'visitnumber', 'hrdur', 'airdur', 'chestdur', 'abdodur', 'eeg1dur', 'eeg2dur', 'eogrdur', 'eogldur', 'chindur', 'oximdur', 'posdur', 'hrqual', 'airqual', 'chstqual', 'abdoqual', 'eeg1qual', 'eeg2qual', 'eogrqual', 'eoglqual', 'chinqual', 'oximqual', 'posqual', 'lightoff', 'psg_month'])
+df = df.drop(columns=['srhype', 'htnmed1', 'systbp', 'armbp', 'ankbp', 'diasbp'])   # 고혈압 관련 컬럼
 ## 시간 데이터 정수로 변환
 column_name = 'rcrdtime'
 change_name = column_name + "_numeric"
@@ -30,20 +31,6 @@ df[column_name] = pd.to_datetime(df[column_name], format='%H:%M:%S', errors='coe
 df[change_name] = [(t.hour*3600 + t.minute*60 + t.second) if not pd.isna(t) else pd.NaT for t in df[column_name]]
 df[column_name] = df[change_name]
 df = df.drop(columns=change_name)
-# ## 결측치 채우기
-# ### 모든 컬럼을 float으로 변환
-# df = df.astype('float')
-# ### 각 컬럼의 결측치 비율 계산
-# missing_ratio = df.isnull().sum() / len(df)
-# ### 결측치 비율이 50% 이상인 컬럼 제거
-# columns_to_drop = missing_ratio[missing_ratio >= 0.5].index
-# df.drop(columns_to_drop, axis=1, inplace=True)
-# ### 0~5 사이의 값을 가진 컬럼의 결측치를 0으로 대체
-# columns_to_replace = df.columns[(df.min() >= 0) & (df.max() <= 5)].tolist()
-# df[columns_to_replace] = df[columns_to_replace].fillna(0)
-# ### 그 이외의 값을 가진 컬럼의 결측치를 평균으로 대체
-# columns_to_replace = df.columns[(df.min() < 0) | (df.max() > 5)].tolist()
-# df[columns_to_replace] = df[columns_to_replace].fillna(df.mean())
 print(df.shape)
 
 # 전체 df를 파일로 저장
