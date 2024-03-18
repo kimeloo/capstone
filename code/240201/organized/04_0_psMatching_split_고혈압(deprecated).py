@@ -58,6 +58,9 @@ matched_control_group = control_group.iloc[matched_control_indices]
 # 매칭된 데이터셋 생성
 matched_data = pd.concat([htnderv_s1_group, matched_control_group])
 
+# 중복 개수 확인
+print(matched_data.duplicated().sum())
+
 # 결과 확인
 # print(matched_data.head())
 
@@ -65,7 +68,7 @@ matched_data = pd.concat([htnderv_s1_group, matched_control_group])
 print(matched_data['htnderv_s1'].value_counts())
 
 # 전체 데이터를 csv 파일로 저장
-matched_data.to_csv(pwd + '02_psMatching_htnderv_s1_all.csv', index=False)
+matched_data.to_csv(pwd + '02_htnderv_s1_all.csv', index=False)
 
 # train-test set split
 from sklearn.model_selection import train_test_split
@@ -73,5 +76,5 @@ X = matched_data
 X_train, X_test = train_test_split(X, test_size=0.3, random_state=2024)
 
 # 각각 저장
-X_train.to_csv(pwd + '02_psMatching_htnderv_s1_train.csv', index=False)
-X_test.to_csv(pwd + '02_psMatching_htnderv_s1_test.csv', index=False)
+X_train.to_csv(pwd + '02_htnderv_s1_train.csv', index=False)
+X_test.to_csv(pwd + '02_htnderv_s1_test.csv', index=False)
