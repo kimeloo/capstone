@@ -49,8 +49,8 @@ val = stratified_random_sampling(val, 'htnderv_s1')
 test = stratified_random_sampling(test, 'htnderv_s1')
 
 # size에 맞게 랜덤 샘플링
-val = val.sample(n=val_size, random_state=2024 if val_size < val.shape[0] else None)
-test = test.sample(n=test_size, random_state=2024 if test_size < test.shape[0] else None)
+val = val.sample(n=val_size if val_size < val.shape[0] else None, random_state=2024)
+test = test.sample(n=test_size if val_size < val.shape[0] else None, random_state=2024)
 
 # 개수 확인
 print('비율 재조정 완료')
