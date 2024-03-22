@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 
 # 데이터 불러오기
 pwd = '~/documents/coding/capstone/data/240201/'
-data = pd.read_csv(pwd + '01_htnderv_s1.csv')
+data = pd.read_csv(pwd + '01_2_htnderv_s1.csv')
 
 # train-val-test set split
 # train:test = 7:3
