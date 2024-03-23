@@ -25,10 +25,8 @@ if __name__ == "__main__":
     data_after = pd.read_csv(f'{pwd}/{filename_after}')
 
     # Covariate 선택
-    covariates = ['height', 'weight', 'weight20', 'age_s1', 'gender', 'race']
-    # Covariate에 과거 질병력 추가
-    # covariates.extend(['srhype', 'cgpkyr', 'alcoh', 'angina15', 'mi15', 'stroke15', 'hf15', 'cabg15', 'ca15', 'othrcs15', 'pacem15', 'sa15', 'emphys15', 'crbron15', 'copd15', 'asthma15', 'asth1215', 'cough315', 'phlegm15', 'runny15', 'sinus15', 'nitro15', 'estrgn1', 'progst1', 'htnmed1', 'anar1a1', 'lipid1', 'sympth1', 'tca1', 'asa1', 'nsaid1', 'benzod1', 'premar1', 'pdei1', 'ntca1', 'warf1', 'loop1', 'hctz1', 'hctzk1', 'ccbir1', 'ccbsr1', 'alpha1', 'alphad1', 'anar1b1', 'anar1c1', 'anar31', 'pvdl1', 'basq1', 'niac1', 'thry1', 'istrd1', 'ostrd1', 'beta1', 'betad1', 'ccb1', 'ace1', 'aced1', 'vaso1', 'vasod1', 'diuret1', 'dig1', 'ntg1'])
-
+    covariates = ['bmi_s1', 'age_s1', 'gender']
+    
     # T-score와 p-value 계산
     t_score_p_value_before = calculate(data_before, covariates)
     t_score_p_value_after = calculate(data_after, covariates)

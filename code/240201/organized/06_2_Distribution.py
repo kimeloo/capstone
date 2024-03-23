@@ -10,9 +10,9 @@ after_0 = after_psm[after_psm['htnderv_s1'] == 0]
 before_1 = before[before['htnderv_s1'] == 1]
 after_1 = after_psm[after_psm['htnderv_s1'] == 1]
 
-column_names = ['height', 'weight', 'weight20', 'age_s1', 'gender', 'race']
+column_names = ['bmi_s1', 'age_s1', 'gender']
 
-fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
+fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 10))
 
 axes = axes.flatten()
 

@@ -33,8 +33,8 @@ print(f'test에 unmatched 추가 후 중복 : {test.duplicated().sum()}')
 train_ratio = 28
 val_ratio = 7
 test_ratio = 15
-val_size = int(train['nsrrid'].nunique()*val_ratio/(train_ratio+val_ratio+test_ratio))
-test_size = int(train['nsrrid'].nunique()*test_ratio/(train_ratio+val_ratio+test_ratio))
+val_size = int(train['nsrrid'].nunique()*val_ratio/train_ratio)
+test_size = int(train['nsrrid'].nunique()*test_ratio/train_ratio)
 
 # stratified random sampling
 def stratified_random_sampling(df, column_name):
@@ -50,7 +50,7 @@ test = stratified_random_sampling(test, 'htnderv_s1')
 
 # size에 맞게 랜덤 샘플링
 val = val.sample(n=val_size if val_size < val.shape[0] else None, random_state=2024)
-test = test.sample(n=test_size if val_size < val.shape[0] else None, random_state=2024)
+test = test.sample(n=test_size if test_size < test.shape[0] else None, random_state=2024)
 
 # 개수 확인
 print('비율 재조정 완료')

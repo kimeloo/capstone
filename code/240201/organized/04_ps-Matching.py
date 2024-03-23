@@ -6,7 +6,7 @@ class psMatching:
     def __init__(self, data):
         self.data = data
         self.model = LogisticRegression(max_iter=2000, random_state=2024)
-        self.covariates = ['height', 'weight', 'weight20', 'age_s1', 'gender', 'race']
+        self.covariates = ['bmi_s1', 'age_s1', 'gender']
     
     def calculate(self):
         # Propensity Score 계산 모델 학습
