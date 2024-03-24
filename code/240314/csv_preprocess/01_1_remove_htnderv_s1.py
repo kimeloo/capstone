@@ -1,13 +1,15 @@
 import pandas as pd
 
 # 파일 경로, 파일명 입력
-pwd = '~/Documents/Coding/capstone/data/240201'
-filename = 'shhs1-dataset-0.20.0.csv'
+pwd = '~/Documents/Coding/capstone/data/240314'
+filename = 'shhs1-dataset-0.14.0.csv'
 # CSV 파일 불러오기
 df = pd.read_csv(f'{pwd}/{filename}', low_memory=False)
 print(df.shape)
 
 # 1. 전체 데이터에서 필요없는 컬럼/행 제거
+## 컬럼명을 소문자로 변경
+df.columns = df.columns.str.lower()
 ## outliercheck1, outliercheck2 컬럼의 값이 1이면 해당 행 제거
 df = df[df['outliercheck1'] != 1]
 df = df[df['outliercheck2'] != 1]

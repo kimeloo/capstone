@@ -3,7 +3,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # 데이터 불러오기
-pwd = '~/Documents/Coding/capstone/data/240201'
+pwd = '~/Documents/Coding/capstone/data/240314'
 filename = '04_htnderv_s1_train.csv'
 data = pd.read_csv(f'{pwd}/{filename}')
 

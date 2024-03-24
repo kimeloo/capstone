@@ -45,7 +45,7 @@ def fill_mean(df, strategy='mean'):
 
 if __name__ == "__main__":
     # 데이터 불러오기
-    pwd = '~/Documents/Coding/capstone/data/240201'
+    pwd = '~/Documents/Coding/capstone/data/240314'
     filename = '02_htnderv_s1_train.csv'
     data = pd.read_csv(f'{pwd}/{filename}')
     data = data.astype('float')
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     replaced_data.to_csv(f'{pwd}/03_htnderv_s1_train.csv', index=False)
 
     # 결측치 처리 방안 저장(MICE 모델 X)
-    filename_original = 'shhs1-dataset-0.20.0.csv'
+    filename_original = 'shhs1-dataset-0.14.0.csv'
     original = pd.read_csv(f'{pwd}/{filename}')
     columns_original = original.columns.tolist()
     columns_removed = list(set(columns_original) - set(replaced_data.columns))

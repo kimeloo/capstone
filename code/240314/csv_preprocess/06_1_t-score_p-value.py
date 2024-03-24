@@ -18,7 +18,7 @@ def calculate(data, covariates):
 
 if __name__ == "__main__":
     # 파일 경로, 파일명 입력
-    pwd = '~/Documents/Coding/capstone/data/240201'
+    pwd = '~/Documents/Coding/capstone/data/240314'
     filename_before = '03_htnderv_s1_train.csv'
     filename_after = '04_htnderv_s1_train.csv'
     data_before = pd.read_csv(f'{pwd}/{filename_before}')

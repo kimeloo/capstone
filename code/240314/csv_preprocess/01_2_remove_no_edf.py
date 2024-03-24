@@ -2,7 +2,7 @@ from glob import glob
 import pandas as pd
 
 # 파일 경로, 파일명 입력
-csv_pwd = '~/Documents/Coding/capstone/data/240201'
+csv_pwd = '~/Documents/Coding/capstone/data/240314'
 csv_file = '01_htnderv_s1.csv'
 edf_pwd = '/Volumes/HDD1/Capstone/data/240314_SHHS1/SHHS dataset/shhs/polysomnography/edfs'
 edf_file = '*.edf'

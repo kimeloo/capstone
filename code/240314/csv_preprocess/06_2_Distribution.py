@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-pwd = '~/Documents/Coding/capstone/data/240201'
+pwd = '~/Documents/Coding/capstone/data/240314'
 before = pd.read_csv(pwd+'/03_htnderv_s1_train.csv')
 after_psm = pd.read_csv(pwd+'/04_htnderv_s1_train.csv')
 

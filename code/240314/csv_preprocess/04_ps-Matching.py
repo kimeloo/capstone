@@ -77,7 +77,7 @@ class psMatching:
 
 if __name__ == "__main__":
     # 데이터 불러오기
-    pwd = '~/documents/coding/capstone/data/240201/'
+    pwd = '~/documents/coding/capstone/data/240314/'
     train_data = pd.read_csv(pwd + '03_htnderv_s1_train.csv')
 
     # psMatching

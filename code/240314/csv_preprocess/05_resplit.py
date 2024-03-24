@@ -1,7 +1,7 @@
 import pandas as pd
 
 # 파일 불러오기
-pwd = '~/documents/coding/capstone/data/240201'
+pwd = '~/documents/coding/capstone/data/240314'
 train_csv = pd.read_csv(pwd + '/04_htnderv_s1_train.csv')
 val_csv = pd.read_csv(pwd + '/02_htnderv_s1_val.csv')
 test_csv = pd.read_csv(pwd + '/02_htnderv_s1_test.csv')
