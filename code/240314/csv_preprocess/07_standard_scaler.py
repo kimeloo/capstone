@@ -13,8 +13,7 @@ class standard_scaler:
         return data
     
     def dump(self, pwd):
-        with open(pwd+'/standard_scaler.pkl', 'wb') as f:
-            dump(self.scaler, pwd+'/standard_scaler.bin', compress=True)
+        dump(self.scaler, pwd+'/standard_scaler.bin', compress=True)
 
 if __name__ == '__main__':
     pwd = '~/Documents/Coding/capstone/data/240314'
@@ -22,4 +21,4 @@ if __name__ == '__main__':
     X_train = data.drop(columns=['htnderv_s1'])
     sc = standard_scaler()
     X_train = sc.standard_scaler(X_train)
-    sc.dump(pwd)
+    sc.dump("/users/kimeloo"+pwd[1:])

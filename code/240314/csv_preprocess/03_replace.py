@@ -70,17 +70,19 @@ if __name__ == "__main__":
 
     # 결측치 처리 방안 저장(MICE 모델 X)
     filename_original = 'shhs1-dataset-0.20.0.csv'
-    original = pd.read_csv(f'{pwd}/{filename}')
+    original = pd.read_csv(f'{pwd}/{filename_original}', low_memory=False)
     columns_original = original.columns.tolist()
-    columns_removed = list(set(columns_original) - set(replaced_data.columns))
+    # print(len(columns_original))
+    # print(len(replaced_data.columns.tolist()))
+    columns_removed = list(set(columns_original) - set(replaced_data.columns.tolist()))
     
     df = pd.DataFrame(columns=columns_original)
-    # 2행에 각 original dataframe의 각 컬럼 평균값 추가
-    df.loc[0] = original.mean()
-    # columns_removed에 해당하는 컬럼은 NaN으로 처리
-    df.loc[0, columns_removed] = np.nan
+    # 2행에 각 컬럼 평균값 추가
+    df.loc[0] = replaced_data.mean()
+    # columns_removed에 해당하는 컬럼은 drop으로 처리
+    df.loc[0, columns_removed] = 9999999999
+    print(len(columns_removed))
     # columns_replaced_z에 해당하는 컬럼은 0으로 처리
     df.loc[0, columns_replaced_z] = 0
-    
     # 결측치 처리 방안 저장
-    df.to_csv(f'{pwd}/03_1_missing_value_strategy.csv', index=False)
+    df.to_csv(f'{pwd}/strategy.csv', index=False)

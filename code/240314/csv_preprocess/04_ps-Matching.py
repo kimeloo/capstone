@@ -73,6 +73,9 @@ class psMatching:
         # 매칭된 데이터셋 생성
         matched_train = pd.concat([htnderv_s1_group, matched_control_group])
 
+        # Propensity Score 컬럼 제거
+        matched_train.drop('PropensityScore', axis=1, inplace=True)
+
         return matched_train
 
 if __name__ == "__main__":
