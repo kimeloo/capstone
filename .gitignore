@@ -1,4 +1,10 @@
 .DS_Store
 .vscode/
 data/
-.Rproj.user
+*.pyc
+__pycache__/
+*.Rproj
+*.Rproj.user
+*.Rhistory
+*.RData
+*.RDataTmp
