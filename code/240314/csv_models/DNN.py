@@ -7,6 +7,7 @@ from keras.optimizers.legacy import Adam
 from keras.callbacks import EarlyStopping
 from sklearn.metrics import f1_score, confusion_matrix
 import matplotlib.pyplot as plt
+from keras.regularizers import l1
 
 if __name__ == '__main__':
     pwd = '/users/kimeloo/Documents/Coding/capstone/data/240314'
@@ -14,7 +15,8 @@ if __name__ == '__main__':
     val = pd.read_csv(pwd+'/val.csv', low_memory=False)
     test = pd.read_csv(pwd+'/test.csv', low_memory=False)
     strategy = pd.read_csv(pwd+'/strategy.csv')
-    columns = ['ccb1','ace1','beta1','diuret1','age_s1','dig1','waso','vaso1','aai','hctz1']
+    # columns = ['ccb1','ace1','beta1','diuret1','age_s1','dig1','waso','vaso1','aai','hctz1']
+    columns = ['ccb1','ace1','beta1','diuret1','age_s1','dig1','waso','vaso1','aai','hctz1','chol','rcrdtime','mcs_s1','mi2slp02','stloutp','ntg1','timebedp','stonsetp','trig','timest2','twuweh02','avsao2nh','hremt2p','avdnop4','ahremop','slplatp','timest1p']
     X_train, y_train, X_val, y_val, X_test, y_test = run(train, val, test, strategy, columns)
 
     # 모델 설계
@@ -25,12 +27,17 @@ if __name__ == '__main__':
         # Conv1D(256, kernel_size=3, activation='relu'),        # CNN
         # Conv1D(256, kernel_size=3, activation='relu'),
         # Conv1D(256, kernel_size=4, strides=2, activation='relu'),
-        Flatten(),
-        Dense(256, activation='relu', input_shape=(num_features,)),     # DNN
-        # Dense(256, activation='relu'),      # CNN
-        Dense(128, activation='relu'),
+        # Flatten(),
+        # Dense(256, activation='relu', input_shape=(num_features,)),     # DNN
+        Dense(256, activation='relu', input_shape=(num_features,), kernel_regularizer=l1(0.0001)),   # DNN 개선
         Dropout(0.3),
+        # Dense(256, activation='relu'),      # CNN
+        # Dense(128, activation='relu'),
+        # Dropout(0.5),
         Dense(16, activation='relu'),
+        Dropout(0.3),
+        Dense(8, activation='softmax'),
+        Dropout(0.3),
         Dense(1, activation='sigmoid')
     ])
 
@@ -41,9 +48,9 @@ if __name__ == '__main__':
 
     # 모델 학습
     epoch = 1000
-    batch_size = 64
-    history = model.fit(X_train, y_train, epochs=epoch, batch_size=batch_size, validation_data=(X_val, y_val), callbacks=[early_stopping])
-    # history = model.fit(X_train, y_train, epochs=epoch, batch_size=batch_size, validation_data=(X_val, y_val))
+    batch_size = 128
+    # history = model.fit(X_train, y_train, epochs=epoch, batch_size=batch_size, validation_data=(X_val, y_val), callbacks=[early_stopping])
+    history = model.fit(X_train, y_train, epochs=epoch, batch_size=batch_size, validation_data=(X_val, y_val))
 
     # 모델 평가
     test_loss, test_acc = model.evaluate(X_test, y_test)
