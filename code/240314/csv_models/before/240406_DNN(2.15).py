@@ -2,7 +2,7 @@ import pandas as pd
 from preprocess import run
 from keras.models import Sequential
 from keras.layers import Conv1D, Flatten, Dense, Dropout
-from keras.optimizers import Adam
+from keras.optimizers.legacy import Adam
 from keras.callbacks import EarlyStopping
 from keras.regularizers import l1
 
@@ -122,9 +122,9 @@ if __name__ == '__main__':
     val = pd.read_csv(pwd+'/val.csv', low_memory=False)
     test = pd.read_csv(pwd+'/test.csv', low_memory=False)
     strategy = pd.read_csv(pwd+'/strategy.csv')
-    columns = ['ccb1','ace1','beta1','diuret1','age_s1','dig1','waso','vaso1','aai','hctz1','chol','rcrdtime','mcs_s1','mi2slp02','stloutp','ntg1','timebedp','stonsetp','trig','timest2','twuweh02','avsao2nh','hremt2p','avdnop4','ahremop','slplatp','timest1p']
-    import dict_list as dl
-    columns = dl.general_health_10
+    columns = ['timest2', 'times34p', 'rdirem0p', 'stonsetp', 'remlaiip', 'timebedp', 'stloutp', 'avsao2nh', 'timest2p', 'hstg342p']
+    # import dict_list as dl
+    # columns = dl.general_health_10
     X_train, y_train, X_val, y_val, X_test, y_test = run(train, val, test, strategy, columns=[])
 
     # 모델 설계
@@ -132,55 +132,31 @@ if __name__ == '__main__':
     model_def = mymodel(num_features, 0.3)
     model_def.build('DNN')
     dnn = model_def.compile(optimizer=Adam(learning_rate=0.0001), loss='binary_crossentropy', metrics=['accuracy'])
-    model = KerasClassifier(dnn, epochs=1000, batch_size=128, validation_data=(X_val, y_val), callbacks=[EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)])
     
-    # grid 파라미터 지정
-    epochs = [100,500,1000,2000,3000,5000,10000]
-    batch_size = [16,32,64,128,256,512]
-    dropout = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
-    optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
-    learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
-    momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
-    init_mode = ['uniform', 'lecun_uniform', 'normal', 'zero', 'glorot_normal', 'glorot_uniform', 'he_normal', 'he_uniform']
-    param_grid = dict(epochs=epochs, batch_size=batch_size, dropout=dropout, model__init_mode=init_mode)
+    # 모델 학습
+    epoch = 1000
+    batch_size = 512
+    early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)      # DNN patience=5, CNN patience=10
 
+    # history = dnn.fit(X_train, y_train, epochs=epoch, batch_size=batch_size, validation_data=(X_val, y_val), callbacks=[early_stopping])
+    history = dnn.fit(X_train, y_train, epochs=epoch, batch_size=batch_size, validation_data=(X_val, y_val))
 
-    # grid 학습
-    grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=3)
-    grid_result = grid.fit(X_train, y_train)
-    # summarize results
-    means = grid_result.cv_results_['mean_test_score']
-    stds = grid_result.cv_results_['std_test_score']
-    params = grid_result.cv_results_['params']
-    for mean, stdev, param in zip(means, stds, params):
-        print("%f (%f) with: %r" % (mean, stdev, param))
-    print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+    # XGBoost 모델
+    nn, xgboost = model_def._XGBoost()
+    y_pred = xgboost.predict(nn(X_test))
 
+    from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
+    # 모델 평가
+    accu = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+    conf_mat = confusion_matrix(y_test, y_pred)
+    print(f'Accuracy: {accu}\nF1 Score: {f1}')
+    print("Confusion Matrix:")
+    print(conf_mat)
 
-    # # 모델 학습
-    # epoch = 1000
-    # batch_size = 128
-    # early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)      # DNN patience=5, CNN patience=10
+    # 모델 평가
+    acc = accuracy(history)
+    acc.run(X_test, y_test)
 
-    # history = model_def.model.fit(X_train, y_train, epochs=epoch, batch_size=batch_size, validation_data=(X_val, y_val), callbacks=[early_stopping])
-    # history = model.model.fit(X_train, y_train, epochs=epoch, batch_size=batch_size, validation_data=(X_val, y_val))
-
-    # # XGBoost 모델
-    # dnn, xgboost = model._XGBoost()
-    # y_pred = xgboost.predict(dnn(X_test))
-
-    # from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
-    # # 모델 평가
-    # accu = accuracy_score(y_test, y_pred)
-    # f1 = f1_score(y_test, y_pred)
-    # conf_mat = confusion_matrix(y_test, y_pred)
-    # print(f'Accuracy: {accu}\nF1 Score: {f1}')
-    # print("Confusion Matrix:")
-    # print(conf_mat)
-
-    # # 모델 평가
-    # acc = accuracy(history)
-    # acc.run(X_test, y_test)
-
-    # # print(model.model.summary())
-    # # print(dnn.summary())
+    # print(model.model.summary())
+    # print(dnn.summary())
