@@ -59,8 +59,8 @@ def XGBoost_create(model=Sequential(), X_train=[], y_train=[], X_val=[], y_val=[
         'eta': 0.1,
         'max_depth': 6,
         'n_jobs': -1,
-        'subsample': 0.8,
-        'colsample_bytree': 0.8,
+        # 'subsample': 0.8,
+        # 'colsample_bytree': 0.8,
         'random_state': 42,
     }
     early_stopping_rounds = 100
@@ -71,25 +71,19 @@ def XGBoost_create(model=Sequential(), X_train=[], y_train=[], X_val=[], y_val=[
     return without_output, ml_model
 
 if __name__=='__main__':
-    pwd = '/users/kimeloo/Documents/Coding/capstone/data/240314'
-    train = pd.read_csv(pwd+'/train.csv')
+    pwd = '/users/kimeloo/Documents/Coding/capstone/data/240415'
+    train = pd.read_csv(pwd+'/train_replaced.csv', low_memory=False)
     val = pd.read_csv(pwd+'/val.csv', low_memory=False)
     test = pd.read_csv(pwd+'/test.csv', low_memory=False)
     all_data = pd.read_csv(pwd+'/shhs1-dataset-0.20.0.csv', low_memory=False)
     strategy = pd.read_csv(pwd+'/strategy.csv')
     columns = []
     
-    # 아래는 일단 나오긴 함
-    # columns = ['nsaid1']
-    # columns = ['nsaid1', 'thry1', 'lipid1', 'progst1', 'estrgn1', 'benzod1', 'ntca1', 'alpha1', 'ostrd1', 'sympth1', 'premar1', 'niac1', 'tca1', 'hctz1', 'hctzk1', 'istrd1', 'loop1', 'dig1', 'pdei1', 'ntg1', 'ccbir1', 'warf1', 'alphad1', 'anar1b1', 'anar1c1', 'anar31', 'basq1', 'betad1', 'anar1a1', 'aced1']
-    # columns.extend(['hstg342p', 'timest1p', 'pctsa95h', 'remlaiip', 'timest2', 'times34p', 'waso', 'timest34', 'pcstahar', 'timest1', 'timerem', 'nremepop', 'stonsetp', 'hslptawp', 'pslp_hp3', 'remlaip'])
-    # columns.extend(['ahi_c0h3a', 'rdinr3p', 'rdirem0p', 'rdi2pa', 'rdi0p', 'rdi0pns', 'rdinr0p', 'rdirop', 'rdirem2p', 'rdi5p', 'ahi_c0h3', 'rdinr2p', 'rdinop', 'rdinop3', 'rdiroa', 'rdi3pns', 'rdi0pa', 'ahi_c0h4', 'rdi2p', 'rdi2pns', 'rdi4pa'])
-    # columns.extend(['hnroa3', 'hnroa5', 'hnrbp4', 'hnrop', 'hrop', 'hnrop2', 'hnrop3', 'hrop2', 'hnroa2', 'hnrbp', 'hnrbp2', 'hroa3', 'hnroa', 'hroa2', 'hrembp', 'hnrba', 'hroa4', 'hroa', 'hrop3', 'hnroa4', 'hroa5', 'hnrba3', 'hrop4', 'hnrop5', 'hnrba2', 'hrop5', 'oanop5', 'hnrbp5', 'hrembp5', 'hnrop4'])
-    # 아래는 240402_DNN_XGB.py에서 사용한 컬럼
-    # columns = ['ccb1','ace1','beta1','diuret1','age_s1','dig1','waso','vaso1','aai','hctz1','chol','rcrdtime','mcs_s1','mi2slp02','stloutp','ntg1','timebedp','stonsetp','trig','timest2','twuweh02','avsao2nh','hremt2p','avdnop4','ahremop','slplatp','timest1p']
-    # 아래는 240312에서 사용한 컬럼
-    # columns.extend(['rdinr0p', 'rdi0ps', 'rdirem5p', 'rdirem4p', 'rdirem3p', 'rdi0p', 'rdirem2p', 'rdi0pa', 'rdi2pa', 'rdi3ps', 'rdinr2p', 'rdi2ps', 'rdi5p'])
-    
+    # import dict_list as dl
+    # columns = ['ccb1', 'ace1', 'beta1', 'diuret1', 'dig1', 'vaso1', 'chol', 'hctzk1', 'hctz1', 'timebedp', 'trig', 'stonsetp', 'ntg1', 'age_s1', 'waso', 'aai', 'height', 'stloutp', 'pcs_s1', 'timest1p', 'mi2slp02', 'slpeffp', 'ahremop', 'nrvous25', 'loop1', 'twuweh02', 'rcrdtime', 'mcs_s1', 'remlaip', 'alcoh']
+    # columns = ['timebedp', 'trig', 'stonsetp', 'age_s1', 'waso', 'aai', 'height', 'stloutp', 'pcs_s1', 'timest1p', 'mi2slp02', 'slpeffp', 'ahremop', 'nrvous25', 'twuweh02', 'rcrdtime', 'mcs_s1', 'remlaip', 'alcoh']
+
+    columns = ['ccb1', 'ace1', 'beta1', 'diuret1', 'age_s1', 'dig1', 'vaso1', 'waso', 'aai', 'hctzk1']
     columns = list(set(columns))
     _, _, _, _, X_all, y_all = run(train, val, all_data, strategy, columns)
     X_train, y_train, X_val, y_val, X_test, y_test = run(train, val, test, strategy, columns)
@@ -107,8 +101,9 @@ if __name__=='__main__':
     input()
 
     keras_model = CNN_create(opt=optimizer, loss=loss, metrics=metrics, dropout=dropout, X_shape=X_shape)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10)
-    keras_model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val, y_val), verbose=1, callbacks=[early_stopping])
+    # early_stopping = EarlyStopping(monitor='val_loss', patience=10)
+    # keras_model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val, y_val), verbose=1, callbacks=[early_stopping])
+    keras_model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val, y_val), verbose=1)
     bef_xgb, xgb_model = XGBoost_create(model=keras_model, X_train=X_train, y_train=y_train, X_val=X_val, y_val=y_val)
 
     cnn_y_pred = keras_model.predict(X_test)
@@ -154,7 +149,10 @@ if __name__=='__main__':
     ax[0].set_yticklabels(['0', '1'])
     for i in range(2):
         for j in range(2):
-            ax[0].text(j, i, cnn_cm[i, j], ha='center', va='center', color='black')
+            if i+j==0 or i*j==1:
+                ax[0].text(j, i, cnn_cm[i, j], ha='center', va='center', color='white')
+            else:
+                ax[0].text(j, i, cnn_cm[i, j], ha='center', va='center', color='black')
     ax[1].imshow(xgb_cm, cmap='Blues')
     ax[1].set_title('XGBoost')
     ax[1].set_xlabel('Predicted')
@@ -165,7 +163,10 @@ if __name__=='__main__':
     ax[1].set_yticklabels(['0', '1'])
     for i in range(2):
         for j in range(2):
-            ax[1].text(j, i, xgb_cm[i, j], ha='center', va='center', color='black')
+            if i+j==0 or i*j==1:
+                ax[1].text(j, i, xgb_cm[i, j], ha='center', va='center', color='white')
+            else:
+                ax[1].text(j, i, xgb_cm[i, j], ha='center', va='center', color='black')
     plt.show()
 
     ##############################
@@ -227,6 +228,7 @@ if __name__=='__main__':
         plt.ylabel("Variable Name")
         plt.show()
 
-    # columns = X_train.columns
+    if columns == []:
+        columns = list(train.columns)
     extract_feature_importance(keras_model, X_train, y_train, columns)
     # extract_feature_importance(keras_model, X_all, y_all, columns)

@@ -67,12 +67,13 @@ def XGBoost_create(model=Sequential(), X_train=[], y_train=[], X_val=[], y_val=[
     num_boost_round = 500
     # ml_model = xgb.XGBClassifier()
     ml_model=xgb.train(params, dtrain, num_boost_round=num_boost_round, early_stopping_rounds=early_stopping_rounds, evals=w_list, verbose_eval=100)
-    ml_model=xgb.train(params, dtrain, num_boost_round=num_boost_round, evals=w_list, verbose_eval=100)
+    # ml_model=xgb.train(params, dtrain, num_boost_round=num_boost_round, evals=w_list, verbose_eval=100)
     return without_output, ml_model
 
 if __name__=='__main__':
-    pwd = '/users/kimeloo/Documents/Coding/capstone/data/240314'
-    train = pd.read_csv(pwd+'/train.csv')
+    pwd = '/users/kimeloo/Documents/Coding/capstone/data/240415'
+    pwd_model = '/users/kimeloo/Documents/Coding/capstone/MODELS/shhs_htnderv_s1/240415_repl_0_all'
+    train = pd.read_csv(pwd+'/train_replaced.csv', low_memory=False)
     val = pd.read_csv(pwd+'/val.csv', low_memory=False)
     test = pd.read_csv(pwd+'/test.csv', low_memory=False)
     all_data = pd.read_csv(pwd+'/shhs1-dataset-0.20.0.csv', low_memory=False)
@@ -94,22 +95,11 @@ if __name__=='__main__':
     _, _, _, _, X_all, y_all = run(train, val, all_data, strategy, columns)
     X_train, y_train, X_val, y_val, X_test, y_test = run(train, val, test, strategy, columns)
 
-    epochs = 500
-    optimizer = Adam(learning_rate=0.0001)
-    loss = 'binary_crossentropy'
-    metrics = 'accuracy'
-    batch_size = 512
-    dropout = 0.2
-    X_shape = X_train.shape[1]
-
-    temp = CNN_create(X_shape=X_shape)
-    print(temp.summary())
-    input()
-
-    keras_model = CNN_create(opt=optimizer, loss=loss, metrics=metrics, dropout=dropout, X_shape=X_shape)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10)
-    keras_model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val, y_val), verbose=1, callbacks=[early_stopping])
-    bef_xgb, xgb_model = XGBoost_create(model=keras_model, X_train=X_train, y_train=y_train, X_val=X_val, y_val=y_val)
+    from keras.models import load_model
+    keras_model = load_model(pwd_model+'/CNN')
+    xgb_model = xgb.Booster()
+    xgb_model.load_model(pwd_model+'/XGBoost.json')
+    bef_xgb = Model(inputs=keras_model.input, outputs=keras_model.layers[-2].output)
 
     cnn_y_pred = keras_model.predict(X_test)
     cnn_y_pred = [1 if x > 0.5 else 0 for x in cnn_y_pred]
@@ -129,16 +119,10 @@ if __name__=='__main__':
     sum_acc = (sum_pred == y_test).mean()
     sum_f1 = f1_score(y_test, sum_pred)
     ##############################
-    print(f'epochs: {epochs}, optimizer: {optimizer.get_config()["name"]}({optimizer.get_config()["learning_rate"]}), loss: {loss}, metrics: {metrics}, batch_size: {batch_size}, dropout: {dropout}')
     print(f'CNN test accuracy: {cnn_test_acc}, CNN f1 score: {cnn_f1}, CNN test loss: {cnn_test_loss}')
     print(f'XGB test accuracy: {xgb_test_acc}, XGB f1 score: {xgb_f1}')
 
     print(f'Sum accuracy: {sum_acc}, Sum f1 score: {sum_f1}')
-
-
-    keras_model.save('CNN')
-    xgb_model.save_model('XGBoost.json')
-    print('Models saved')
 
     cnn_cm = confusion_matrix(y_test, cnn_y_pred)
     xgb_cm = confusion_matrix(y_test, xgb_y_pred)
@@ -154,7 +138,10 @@ if __name__=='__main__':
     ax[0].set_yticklabels(['0', '1'])
     for i in range(2):
         for j in range(2):
-            ax[0].text(j, i, cnn_cm[i, j], ha='center', va='center', color='black')
+            if i+j==0 or i*j==1:
+                ax[0].text(j, i, cnn_cm[i, j], ha='center', va='center', color='white')
+            else:
+                ax[0].text(j, i, cnn_cm[i, j], ha='center', va='center', color='black')
     ax[1].imshow(xgb_cm, cmap='Blues')
     ax[1].set_title('XGBoost')
     ax[1].set_xlabel('Predicted')
@@ -165,7 +152,10 @@ if __name__=='__main__':
     ax[1].set_yticklabels(['0', '1'])
     for i in range(2):
         for j in range(2):
-            ax[1].text(j, i, xgb_cm[i, j], ha='center', va='center', color='black')
+            if i+j==0 or i*j==1:
+                ax[1].text(j, i, xgb_cm[i, j], ha='center', va='center', color='white')
+            else:
+                ax[1].text(j, i, xgb_cm[i, j], ha='center', va='center', color='black')
     plt.show()
 
     ##############################
@@ -189,7 +179,6 @@ if __name__=='__main__':
     sum_acc = (sum_pred == y_all).mean()
     sum_f1 = f1_score(y_all, sum_pred)
     ##############################
-    print(f'epochs: {epochs}, optimizer: {optimizer.get_config()["name"]}({optimizer.get_config()["learning_rate"]}), loss: {loss}, metrics: {metrics}, batch_size: {batch_size}, dropout: {dropout}')
     print(f'CNN test accuracy: {cnn_test_acc}, CNN f1 score: {cnn_f1}, CNN test loss: {cnn_test_loss}')
     print(f'XGB test accuracy: {xgb_test_acc}, XGB f1 score: {xgb_f1}')
 
@@ -213,12 +202,12 @@ if __name__=='__main__':
         
         feature_match = list(zip(columns, feature_importance))
         feature_match = sorted(feature_match, key=lambda x: x[1], reverse=True)
-        print(feature_match)
+        print(feature_match[:10])
 
         # feature_match plot
         # feature_match의 0번째 인덱스가 변수명, 1번째 인덱스가 중요도
-        feature_name = [x[0] for x in feature_match]
-        importance = [x[1] for x in feature_match]
+        feature_name = [x[0] for x in feature_match[:30]]
+        importance = [x[1] for x in feature_match[:30]]
 
         plt.figure(figsize=(12, 6))
         sns.barplot(x=importance, y=feature_name, hue=feature_name, legend=False, palette="viridis")
@@ -227,6 +216,7 @@ if __name__=='__main__':
         plt.ylabel("Variable Name")
         plt.show()
 
-    # columns = X_train.columns
+    if columns == []:
+        columns = list(train.columns)
     extract_feature_importance(keras_model, X_train, y_train, columns)
     # extract_feature_importance(keras_model, X_all, y_all, columns)
